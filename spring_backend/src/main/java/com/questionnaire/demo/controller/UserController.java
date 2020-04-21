@@ -9,6 +9,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import java.awt.*;
 import java.util.HashMap;
 
 @Controller
@@ -25,15 +26,15 @@ public class UserController {
     @ResponseBody
     HashMap<String, Object> login(@RequestBody User requestUser) {
         HashMap<String, Object> response = new HashMap<>();
-        HashMap<String, String> data = userService.login(requestUser, redisTemplate);
-        if (data != null) {
-            data.put("token", Token.buildToken(data.get("uuid")));
-            response.put("code", 0);
-            response.put("msg", "登录成功");
+        HashMap<String, String> data = new HashMap<>();
+        if (userService.login(requestUser, redisTemplate)) {
+            data.put("token", Token.buildToken(requestUser.getID()));
+            response.put("code", 20000);
+            response.put("message", "Login success.");
             response.put("data", data);
         } else {
-            response.put("code", 401);
-            response.put("msg", "账号或密码错误");
+            response.put("code", 60204);
+            response.put("message", "Account or password Incorrect.");
         }
         return response;
     }
@@ -58,6 +59,34 @@ public class UserController {
             response.put("code", 401);
             response.put("message", "注册失败");
         }
+        return response;
+    }
+
+    @CrossOrigin
+    @RequestMapping(value = "/api/user/info", method = RequestMethod.GET)
+    @ResponseBody
+    public HashMap<String, Object> getUserInfo(@RequestParam("token") String token){
+        HashMap<String, Object> response = new HashMap<>();
+        HashMap<String, Object> data = userService.getUserInfo("", redisTemplate);
+        if (true)
+        {
+            response.put("code",20000);
+            response.put("data",data);
+        }
+        else {
+            response.put("code",50008);
+            response.put("message", "Login failed, unable to get user details.");
+        }
+        return response;
+    }
+
+    @CrossOrigin
+    @RequestMapping(value = "/api/user/logout")
+    @ResponseBody
+    public HashMap<String, Object> logout() {
+        HashMap<String, Object> response = new HashMap<>();
+        response.put("code",20000);
+        response.put("data","success");
         return response;
     }
 }

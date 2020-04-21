@@ -7,26 +7,21 @@ import org.springframework.data.redis.core.RedisTemplate;
 import java.nio.charset.Charset;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Random;
 
 public class UserService {
-    public HashMap<String, String> login(User requestUser, RedisTemplate redisTemplate)
+    public boolean login(User requestUser, RedisTemplate redisTemplate)
     {
-//        HashOperations ops = redisTemplate.opsForHash();
-//        Object res = ops.get(requestUser.getName(),"password");
-//        if (res == null || !res.equals(requestUser.getPassswd()))
-//            return null;
-//        return true;
-        if (requestUser.getName().equals("578001344@qq.com") && requestUser.getPassswd().equals("admin"))
-        {
-            HashMap<String, String> ret = new HashMap<String, String>();
-            ret.put("username","57800134@qq.com");
-            ret.put("name","stitch");
-            ret.put("uuid","admin-uuid");
-            return ret;
-        }
-        return null;
+        HashOperations ops = redisTemplate.opsForHash();
+        String username = requestUser.getUserName();
+        Object passwd = ops.get(username,"password");
+        if (passwd == null || !passwd.equals(requestUser.getPassswd()))
+            return false;
+        requestUser.setID(ops.get(username, "userid").toString());
+        return true;
     }
 
     public HashMap<String, String> register(User regiUser, RedisTemplate redisTemplate) {
@@ -45,6 +40,18 @@ public class UserService {
         catch (Error e) {
             return null;
         }
+    }
+
+    public HashMap<String, Object> getUserInfo(String username, RedisTemplate redisTemplate)
+    {
+        HashOperations ops = redisTemplate.opsForHash();
+        HashMap<String, Object> data = new HashMap<>();
+        data.put("roles", Arrays.asList("admin"));
+        data.put("avatar","https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif");
+//        data.put("name", ops.get(username, "name").toString());
+        data.put("name", "stitch");
+        data.put("introduction", "I am an happy administrator");
+        return data;
     }
 
     public String generateID(){
