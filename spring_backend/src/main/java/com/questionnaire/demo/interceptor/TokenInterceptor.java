@@ -6,6 +6,7 @@ import org.springframework.web.servlet.HandlerInterceptor;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.HashMap;
 
 @Component
 public class TokenInterceptor implements HandlerInterceptor {
@@ -19,12 +20,16 @@ public class TokenInterceptor implements HandlerInterceptor {
         }
         response.setCharacterEncoding("utf-8");
         String token = request.getHeader("X-Token");
+        HashMap<String, Object> data = new HashMap<>();
         if (token != null){
             boolean result = Token.verify(token);
             if(result){
                 System.out.println("通过拦截器");
                 return true;
             }
+            // illegal token
+            data.put("code", 50008);
+            response.getWriter().write(data.toString());
         }
         System.out.println("认证失败");
         response.getWriter().write("50000");

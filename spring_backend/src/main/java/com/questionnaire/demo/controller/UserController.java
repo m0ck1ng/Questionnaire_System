@@ -16,9 +16,6 @@ import java.util.HashMap;
 public class UserController {
     @Autowired
     RedisTemplate redisTemplate; //默认提供的用来操作对象的redis操作实例
-//    @Autowired
-//    StringRedisTemplate stringRedisTemplate; //默认提供的用来操作字符串的redis操作实例
-
     private UserService userService = new UserService();
 
     @CrossOrigin
@@ -26,11 +23,11 @@ public class UserController {
     @ResponseBody
     HashMap<String, Object> login(@RequestBody User requestUser) {
         HashMap<String, Object> response = new HashMap<>();
-        HashMap<String, String> data = new HashMap<>();
         if (userService.login(requestUser, redisTemplate)) {
+            HashMap<String, String> data = new HashMap<>();
             data.put("token", Token.buildToken(requestUser.getID()));
             response.put("code", 20000);
-            response.put("message", "Login success.");
+            response.put("message", "Login Success.");
             response.put("data", data);
         } else {
             response.put("code", 60204);
@@ -45,19 +42,19 @@ public class UserController {
     public HashMap<String, Object> register(@RequestBody User regiUser) {
         HashMap<String, Object> response = new HashMap<>();
         if (redisTemplate.hasKey(regiUser.getUserName())) {
-            response.put("code", 401);
-            response.put("msg", "用户已存在");
+            response.put("code", 61204);
+            response.put("message", "User exists.");
             return response;
         }
-        HashMap<String, String> data = userService.register(regiUser, redisTemplate);
-        if (data != null) {
+        if (userService.register(regiUser, redisTemplate)) {
+            HashMap<String, String> data = new HashMap<>();
             data.put("token", Token.buildToken(regiUser.getID()));
-            response.put("code", 0);
-            response.put("msg", "注册成功");
+            response.put("code", 20000);
+            response.put("message", "Register Success.");
             response.put("data", data);
         } else {
-            response.put("code", 401);
-            response.put("message", "注册失败");
+            response.put("code", 61205);
+            response.put("message", "Register Fail.");
         }
         return response;
     }
