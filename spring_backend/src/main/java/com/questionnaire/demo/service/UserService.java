@@ -1,5 +1,6 @@
 package com.questionnaire.demo.service;
 
+import com.questionnaire.demo.mapper.UserMapper;
 import com.questionnaire.demo.model.User;
 import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -13,31 +14,26 @@ import java.util.HashMap;
 import java.util.Random;
 
 public class UserService {
-    public boolean login(User requestUser, RedisTemplate redisTemplate)
+    public boolean login(User requestUser, UserMapper usermapper)
     {
-//        HashOperations ops = redisTemplate.opsForHash();
-//        String username = requestUser.getUserName();
-//        Object passwd = ops.get(username,"password");
-//        if (passwd == null || !passwd.equals(requestUser.getPassswd()))
-//            return false;
-//        requestUser.setID(ops.get(username, "userid").toString());
-//        return true;
-
+        User user = usermapper.getByUsernameAndPassword(requestUser.getUserName(), requestUser.getPassswd());
+        if (user == null)
+            return false;
+        requestUser.setID(user.getID());
+        return true;
         // for test
-        if (requestUser.getUserName().equals("admin@qq.com") && requestUser.getPassswd().equals("123456")) {
-            requestUser.setID("20200421190249XdOAMK");
-            return true;
-        }
-        return false;
+//        if (requestUser.getUserName().equals("admin@qq.com") && requestUser.getPassswd().equals("123456")) {
+//            requestUser.setID("20200421190249XdOAMK");
+//            return true;
+//        }
+ //       return false;
     }
 
-    public boolean register(User regiUser, RedisTemplate redisTemplate) {
+    public boolean register(User regiUser, UserMapper usermapper) {
         try {
             String id = generateID();
-            HashOperations ops = redisTemplate.opsForHash();
-            ops.put(regiUser.getUserName(), "password", regiUser.getPassswd());
-            ops.put(regiUser.getUserName(), "userid", id);
-            ops.put(regiUser.getUserName(), "name", regiUser.getName());
+            regiUser.setID(id);
+            usermapper.insert(regiUser);
             return true;
         }
         catch (Error e) {
@@ -45,14 +41,13 @@ public class UserService {
         }
     }
 
-    public HashMap<String, Object> getUserInfo(String username, RedisTemplate redisTemplate)
+    public HashMap<String, Object> getUserInfo(String id, UserMapper userMapper)
     {
-//        HashOperations ops = redisTemplate.opsForHash();
         HashMap<String, Object> data = new HashMap<>();
+        User user = userMapper.getById(id);
         data.put("roles", Arrays.asList("admin"));
         data.put("avatar","https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif");
-//        data.put("name", ops.get(username, "name").toString());
-        data.put("name", "stitch");
+        data.put("name", user.getName());
         data.put("introduction", "I am an happy administrator");
         return data;
     }

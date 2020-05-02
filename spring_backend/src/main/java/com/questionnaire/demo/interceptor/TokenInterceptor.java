@@ -28,11 +28,14 @@ public class TokenInterceptor implements HandlerInterceptor {
                 return true;
             }
             // illegal token
-            data.put("code", 50008);
+            data.put("code", 20008);
+            data.put("message","无效token");
             response.getWriter().write(data.toString());
         }
         System.out.println("认证失败");
-        response.getWriter().write("50000");
+        data.put("code", 20008);
+        data.put("message","用户请登录");
+        response.getWriter().write(data.toString());
         return false;
     }
 }

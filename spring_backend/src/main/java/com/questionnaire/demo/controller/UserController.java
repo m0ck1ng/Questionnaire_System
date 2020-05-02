@@ -1,21 +1,18 @@
 package com.questionnaire.demo.controller;
 
+import com.questionnaire.demo.mapper.UserMapper;
 import com.questionnaire.demo.model.Token;
-import com.questionnaire.demo.model.User;
 import com.questionnaire.demo.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.HashOperations;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-
-import java.awt.*;
 import java.util.HashMap;
 
+import com.questionnaire.demo.model.User;
 @Controller
 public class UserController {
     @Autowired
-    RedisTemplate redisTemplate; //默认提供的用来操作对象的redis操作实例
+    private UserMapper userMapper;
     private UserService userService = new UserService();
 
     @CrossOrigin
@@ -23,7 +20,7 @@ public class UserController {
     @ResponseBody
     HashMap<String, Object> login(@RequestBody User requestUser) {
         HashMap<String, Object> response = new HashMap<>();
-        if (userService.login(requestUser, redisTemplate)) {
+        if (userService.login(requestUser, userMapper)) {
             HashMap<String, String> data = new HashMap<>();
             data.put("token", Token.buildToken(requestUser.getID()));
             response.put("code", 20000);
@@ -41,12 +38,12 @@ public class UserController {
     @ResponseBody
     public HashMap<String, Object> register(@RequestBody User regiUser) {
         HashMap<String, Object> response = new HashMap<>();
-        if (redisTemplate.hasKey(regiUser.getUserName())) {
+        if (userMapper.getByUsername(regiUser.getUserName()) != null) {
             response.put("code", 61204);
             response.put("message", "User exists.");
             return response;
         }
-        if (userService.register(regiUser, redisTemplate)) {
+        if (userService.register(regiUser, userMapper)) {
             HashMap<String, String> data = new HashMap<>();
             data.put("token", Token.buildToken(regiUser.getID()));
             response.put("code", 20000);
@@ -64,7 +61,8 @@ public class UserController {
     @ResponseBody
     public HashMap<String, Object> getUserInfo(@RequestParam("token") String token){
         HashMap<String, Object> response = new HashMap<>();
-        HashMap<String, Object> data = userService.getUserInfo("", redisTemplate);
+        String id = Token.decode(token);
+        HashMap<String, Object> data = userService.getUserInfo(id, userMapper);
         if (true)
         {
             response.put("code",20000);

@@ -4,10 +4,9 @@ import com.questionnaire.demo.model.formtemplate.Form;
 import java.util.UUID;
 
 public class FormService {
-    public String addForm(Form form) {
+    public String createUUID() {
         String formID = UUID.randomUUID().toString().replace("-", "").toLowerCase();
-        String formURL = getFormURL(formID);
-        return formURL;
+        return formID;
     }
 
     public String getFormURL(String form_id)

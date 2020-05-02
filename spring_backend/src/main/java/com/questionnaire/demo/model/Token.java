@@ -3,6 +3,7 @@ package com.questionnaire.demo.model;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.interfaces.Claim;
 import com.auth0.jwt.interfaces.DecodedJWT;
 
 import java.util.Date;
@@ -10,7 +11,7 @@ import java.util.HashMap;
 
 public class Token {
     private static final String SECRET = "6MNSobBRCHGIO0fS6MNSobBRCHGIO0fS";
-    private static final long EXPIRE_TIME = 1000 * 1200; //1200s超时
+    private static final long EXPIRE_TIME = 1000 * 60 * 24; //1200s超时
 
     public static String buildToken(String userid) {
         // 设置过期时间
@@ -39,6 +40,9 @@ public class Token {
 
     public static String decode(String token) {
         DecodedJWT jwt = JWT.decode(token);
-        return jwt.getClaim("userid").asString();
+        Claim id = jwt.getClaim("userid");
+        if (id == null)
+            return null;
+        return id.asString();
     }
 }

@@ -24,4 +24,5 @@ public class RedisConfig {
         redisTemplate.setConnectionFactory(connectionFactory);
         return redisTemplate;
     }
+
 }
