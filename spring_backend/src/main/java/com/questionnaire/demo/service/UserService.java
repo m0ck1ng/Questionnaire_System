@@ -21,12 +21,6 @@ public class UserService {
             return false;
         requestUser.setID(user.getID());
         return true;
-        // for test
-//        if (requestUser.getUserName().equals("admin@qq.com") && requestUser.getPassswd().equals("123456")) {
-//            requestUser.setID("20200421190249XdOAMK");
-//            return true;
-//        }
- //       return false;
     }
 
     public boolean register(User regiUser, UserMapper usermapper) {

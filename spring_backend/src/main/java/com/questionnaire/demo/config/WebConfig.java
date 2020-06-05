@@ -21,7 +21,8 @@ public class WebConfig implements WebMvcConfigurer {
         ArrayList<String> excludePath = new ArrayList<>();
         excludePath.add("/api/login");
         excludePath.add("/api/register");
-        excludePath.add("/api/f");
+        excludePath.add("/api/open/forms/**");
+        excludePath.add("/api/open/replys/**");
         registry.addInterceptor(tokenInterceptor)
                 .addPathPatterns("/**")
                 .excludePathPatterns(excludePath);

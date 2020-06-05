@@ -29,12 +29,13 @@ public class TokenInterceptor implements HandlerInterceptor {
             }
             // illegal token
             data.put("code", 20008);
-            data.put("message","无效token");
+            data.put("message","Invalid Token");
             response.getWriter().write(data.toString());
+            return false;
         }
-        System.out.println("认证失败");
+        System.out.println("Authentication Failure");
         data.put("code", 20008);
-        data.put("message","用户请登录");
+        data.put("message","Authentication Failure");
         response.getWriter().write(data.toString());
         return false;
     }

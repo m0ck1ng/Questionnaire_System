@@ -7,12 +7,7 @@ public class Ques {
     public String type;
     public boolean required;
     public Options options;
-    int key;
-    class pre {
-        String key;
-        String type;
-        String val;
-        ArrayList<Integer> options;
-    };
-    String next;
+    public int key;
+    public Pre pre;
+    public String next;
 }

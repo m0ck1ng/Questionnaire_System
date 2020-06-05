@@ -11,11 +11,12 @@ import java.util.HashMap;
 
 public class Token {
     private static final String SECRET = "6MNSobBRCHGIO0fS6MNSobBRCHGIO0fS";
-    private static final long EXPIRE_TIME = 1000 * 60 * 24; //1200s超时
+    private static final long EXPIRE_TIME = 60*60*24*1000; //24h后超时
 
     public static String buildToken(String userid) {
         // 设置过期时间
         Date expried = new Date(new Date().getTime() + EXPIRE_TIME);
+        System.out.println(expried);
         // 设置头部信息
         HashMap<String, Object> header = new HashMap<>(2);
         header.put("Type", "Jwt");
