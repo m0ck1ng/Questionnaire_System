@@ -43,6 +43,11 @@ public class UserController {
             response.put("message", "User exists.");
             return response;
         }
+        if (userMapper.getByName(regiUser.getName()) != null) {
+            response.put("code", 61204);
+            response.put("message", "Name exists.");
+            return response;
+        }
         if (userService.register(regiUser, userMapper)) {
             HashMap<String, String> data = new HashMap<>();
             data.put("token", Token.buildToken(regiUser.getID()));
@@ -82,6 +87,34 @@ public class UserController {
         HashMap<String, Object> response = new HashMap<>();
         response.put("code",20000);
         response.put("data","success");
+        return response;
+    }
+
+    @CrossOrigin
+    @RequestMapping(value = "/api/user/modify", method = RequestMethod.POST)
+    @ResponseBody
+    public HashMap<String, Object> modify(@RequestBody HashMap<String, String> request) {
+        HashMap<String, Object> response = new HashMap<>();
+        String token = request.get("token");
+        String id = Token.decode(token);
+        String origin_password = request.get("origin_passwd");
+        String new_password = request.get("new_passwd");
+        if (userMapper.getByIdAndPassword(id, origin_password) != null) {
+            try {
+                userMapper.updatePassword(new_password, id);
+                response.put("code", 20000);
+                response.put("message", "Password Modify Success");
+            }
+            catch (Exception e) {
+                System.out.println(e);
+                response.put("code", 61210);
+                response.put("message", "Password Modify Failure");
+            }
+        }
+        else {
+            response.put("code", 61210);
+            response.put("message", "Password Wrong");
+        }
         return response;
     }
 }

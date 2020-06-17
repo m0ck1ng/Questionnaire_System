@@ -7,8 +7,8 @@ import java.util.UUID;
 
 public class FormService {
     public String createUUID() {
-        String formID = UUID.randomUUID().toString().replace("-", "").toLowerCase();
-        return formID;
+        String[] ids = UUID.randomUUID().toString().toLowerCase().split("-");
+        return ids[0];
     }
 
     public String getFormURL(String form_id)
